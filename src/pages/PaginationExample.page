@@ -1,0 +1,7 @@
+<apex:page controller="PaginationExampleController">
+    <apex:form >
+        <apex:pageBlock >
+             <c:Paginator Records="{!wrappers}" PageLength="{!pageSize}"/>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,50 @@
+<apex:component controller="PaginatorController">
+     <style>
+        .paginatorColumn {
+             vertical-align: middle !important;
+        }
+
+        .empty-column-content {
+            display: none; 
+        }
+    </style>
+    <apex:attribute type="PaginationTableObjectWrapper[]" name="Records" description="records paginator" assignTo="{!objectWrappers}"/>
+    <apex:attribute type="Integer" name="PageLength" description="size of the page" assignTo="{!inputPageSize}"/>
+    <apex:pageBlockSection columns="1" id="paginatorComponent">
+        <apex:pageBlockTable value="{!paginatedRecords}" var="record" id="recordsTable">
+            <apex:repeat value="{!record.fieldsList}" var="actualField">
+                <apex:column >
+                    <apex:outputText value="{!actualField.value}"/>
+                </apex:column>
+            </apex:repeat>
+            <apex:repeat value="{!displayFieldsList}" var="fieldLabel" id="recordLables" >
+                     <apex:column styleclass="empty-column-content">
+                        <apex:facet name="header">
+                            <apex:commandLink action="{!sortList}" reRender="recordsTable, recordLables, directionImage">
+                              <apex:outputText value="{!fieldLabel}"/>
+                                <apex:param assignTo="{!sortByField}" value="{!fieldLabel}" name="{!fieldLabel}Field"/>
+                                <apex:param assignTo="{!sortDirection}" value="{!IF(AND(sortByField == fieldLabel, sortDirection == 'DESC'),'ASC','DESC')}" name="{!fieldLabel}Direction"/>
+                                <apex:image value="/s.gif" styleClass="{!IF(sortDirection == 'DESC','sortDesc','sortAsc')}" rendered="{!(sortByField == fieldLabel)}"/>
+                            </apex:commandLink>
+                        </apex:facet>
+                    </apex:column>
+            </apex:repeat>
+        </apex:pageBlockTable>
+        <apex:pageBlockSectionItem >
+        <apex:panelgrid columns="9" columnclasses="paginatorColumn" style="float: left; width: 70%; margin-left: 200%; text-align: center;">
+            <apex:commandbutton rerender="paginatorComponent" value="<< First" action="{!first}" disabled="{!!hasPrevious}" title="First Page" />
+            <apex:commandbutton rerender="paginatorComponent" value="< Previous" action="{!previous}" disabled="{!!hasPrevious}" title="Previous Page" />
+            <apex:commandbutton rerender="paginatorComponent" value="Next >" action="{!next}" disabled="{!!hasNext}" title="Next Page" />
+            <apex:commandbutton rerender="paginatorComponent" value="Last >>" action="{!last}" disabled="{!!hasNext}" title="Last Page" />
+        </apex:panelgrid>
+        <apex:panelgrid columns="9" columnclasses="paginatorColumn" style=" float: right;">
+            <apex:outputText value="{!MinViewedRecords} - {!MaxViewedRecords} of {!ResultSize} "/>
+            <apex:outputtext value="Display:" />
+            <apex:selectlist id="rows" value="{!selectedPageSize}" size="1" style="margin-top:3px">
+                <apex:selectoptions value="{!pageSizeOptions}"/>
+                <apex:actionSupport event="onchange" reRender="paginatorComponent" action="{!refreshSize}"/>
+           </apex:selectlist>
+        </apex:panelgrid>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</apex:component>
